@@ -1,7 +1,7 @@
 import * as React from "react";
 import Input from "@/component/inputs/Input";
 import { CiUser } from "react-icons/ci";
-import { FiMail } from "react-icons/fi";
+import { FiLock, FiMail } from "react-icons/fi";
 import { BsTelephone } from "react-icons/bs";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,22 +10,32 @@ import validator from "validator";
 
 type Props = {};
 
-const FormSchema = z.object({
-  first_name: z
-    .string()
-    .min(2, "First name must be atleast 2 characters")
-    .max(32, "First name must be less than 32 characters")
-    .regex(new RegExp("[a-zA-Z]+$"), "No special characters allowed"),
-  last_name: z
-    .string()
-    .min(2, "Last name must be atleast 2 characters")
-    .max(32, "Last name must be less than 32 characters")
-    .regex(new RegExp("[a-zA-Z]+$"), "No special characters allowed"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().refine(validator.isMobilePhone, {
-    message: "Please enter a valid phone number",
-  }),
-});
+const FormSchema = z
+  .object({
+    first_name: z
+      .string()
+      .min(2, "First name must be atleast 2 characters")
+      .max(32, "First name must be less than 32 characters")
+      .regex(new RegExp("[a-zA-Z]+$"), "No special characters allowed"),
+    last_name: z
+      .string()
+      .min(2, "Last name must be atleast 2 characters")
+      .max(32, "Last name must be less than 32 characters")
+      .regex(new RegExp("[a-zA-Z]+$"), "No special characters allowed"),
+    email: z.string().email("Please enter a valid email address"),
+    phone: z.string().refine(validator.isMobilePhone, {
+      message: "Please enter a valid phone number",
+    }),
+    password: z
+      .string()
+      .min(6, "Password must be atleast 6 characters.")
+      .max(52, "Password must be less than 52 characters."),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password doesn't match",
+    path: ["confirmPassword"],
+  });
 
 type FormSchemaType = z.infer<typeof FormSchema>;
 
@@ -83,6 +93,26 @@ export default function Register(props: Props) {
         placeholder="+(XXX) XXX-XXXX-XXXX"
         register={register}
         error={errors?.phone?.message}
+        disabled={isSubmitting}
+      />
+      <Input
+        name="password"
+        label="Password"
+        type="password"
+        icon={<FiLock />}
+        placeholder="***************"
+        register={register}
+        error={errors?.password?.message}
+        disabled={isSubmitting}
+      />
+      <Input
+        name="confirmPassword"
+        label="Confirm password"
+        type="password"
+        icon={<FiLock />}
+        placeholder="***************"
+        register={register}
+        error={errors?.confirmPassword?.message}
         disabled={isSubmitting}
       />
       <button type="submit">submit</button>
