@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { Account, Profile, User } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
@@ -7,6 +7,8 @@ import TwitterProvider from "next-auth/providers/twitter";
 import Auth0Provider from "next-auth/providers/auth0";
 import clientPromise from "@/lib/mongodb";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import { JWT } from "next-auth/jwt";
+import { Adapter } from "next-auth/adapters";
 
 export default NextAuth({
   providers: [
@@ -40,5 +42,34 @@ export default NextAuth({
   adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({
+      token,
+      user,
+      account,
+      profile,
+      isNewUser,
+    }: {
+      token: JWT;
+      user?: User | Adapter | undefined;
+      account?: Account | undefined | null;
+      profile?: Profile | undefined;
+      isNewUser?: boolean | undefined;
+    }) {
+      // got provider and added to the token
+      if (user) {
+        token.provider = account?.provider;
+      }
+      console.log(token);
+      return token;
+    },
+    async session({ session, token }: { session: any; token: JWT }) {
+      // got provider inised the token and passed it to session so that we can use it anywhere
+      if (session.user) {
+        session.user.provider = token.provider;
+      }
+      return session;
+    },
   },
 });
