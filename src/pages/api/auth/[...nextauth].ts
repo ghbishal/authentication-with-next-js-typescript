@@ -5,8 +5,10 @@ import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
 import TwitterProvider from "next-auth/providers/twitter";
 import Auth0Provider from "next-auth/providers/auth0";
+import clientPromise from "@/lib/mongodb";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 
-export const authOptions = {
+export default NextAuth({
   providers: [
     FacebookProvider({
       clientId: process.env.FACEBOOK_ID as string,
@@ -35,6 +37,5 @@ export const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-};
-
-export default NextAuth(authOptions);
+  adapter: MongoDBAdapter(clientPromise),
+});
