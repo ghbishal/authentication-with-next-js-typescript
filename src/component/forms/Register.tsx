@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
-
-type Props = {};
+import zxcvbn from "zxcvbn";
+import { useEffect } from "react";
 
 const FormSchema = z
   .object({
@@ -39,7 +39,8 @@ const FormSchema = z
 
 type FormSchemaType = z.infer<typeof FormSchema>;
 
-export default function Register(props: Props) {
+export default function Register() {
+  const [passwordScore, setPasswordScore] = React.useState(0);
   const {
     register,
     handleSubmit,
@@ -50,6 +51,14 @@ export default function Register(props: Props) {
   });
 
   const onSubmit = (data: any) => console.log(data);
+  const validatePasswordStrength = () => {
+    let password = watch().password;
+    return zxcvbn(password ? password : "").score;
+  };
+
+  useEffect(() => {
+    setPasswordScore(validatePasswordStrength());
+  }, [watch().password]);
 
   return (
     <form className="my-8 text-sm" onSubmit={handleSubmit(onSubmit)}>
@@ -105,6 +114,23 @@ export default function Register(props: Props) {
         error={errors?.password?.message}
         disabled={isSubmitting}
       />
+      {watch().password?.length > 0 && (
+        <div className="flex mt-2">
+          {Array.from(Array(5).keys()).map((span, i) => (
+            <span className="w-1/5 px-1" key={i}>
+              <div
+                className={`h-2 rounded-xl b ${
+                  passwordScore <= 2
+                    ? "bg-red-400"
+                    : passwordScore < 4
+                    ? "bg-yellow-400"
+                    : "bg-green-500"
+                }`}
+              ></div>
+            </span>
+          ))}
+        </div>
+      )}
       <Input
         name="confirmPassword"
         label="Confirm password"
