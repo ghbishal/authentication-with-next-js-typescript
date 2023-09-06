@@ -29,7 +29,7 @@ export default function Input({
     return "translateY(-12px)";
   };
   return (
-    <div className="mt-3 w-[100%]">
+    <div className="mt-3 w-full">
       <label htmlFor={name} className="text-gray-700">
         {label}
       </label>

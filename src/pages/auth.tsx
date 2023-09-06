@@ -21,9 +21,9 @@ export default function auth() {
                 Sign in
               </a>
             </p>
+            {/* -------- SIGN UP FORM ---------- */}
+            <Register />
           </div>
-          {/* -------- SIGN UP FORM ---------- */}
-          <Register />
         </div>
         {/* ---------- BACKGROUND -------- */}
         <Background image={"../../auth/register.jpg"} />
