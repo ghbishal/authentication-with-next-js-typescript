@@ -31,6 +31,13 @@ const FormSchema = z
       .min(6, "Password must be atleast 6 characters.")
       .max(52, "Password must be less than 52 characters."),
     confirmPassword: z.string(),
+    // validation for check box
+    accept: z.literal(true, {
+      errorMap: () => ({
+        message:
+          "Please agree to all the terms and conditions before continuing",
+      }),
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Password doesn't match",
@@ -141,6 +148,35 @@ export default function Register() {
         error={errors?.confirmPassword?.message}
         disabled={isSubmitting}
       />
+      <div>
+        <input
+          type="checkbox"
+          id="accept"
+          className="mr-2 focus:right-0 rounded"
+          {...register("accept")}
+        />
+        <label htmlFor="accept" className="text-gray-700">
+          I accept the&nbsp;{" "}
+          <a
+            href=""
+            className="text-blue-600 hover:text-blue-700 hover:underline"
+            target="_blank"
+          >
+            trems
+          </a>
+          &nbsp;and&nbsp;
+          <a
+            href=""
+            className="text-blue-600 hover:text-blue-700 hover:underline"
+            target="_blank"
+          >
+            privacy policy
+          </a>
+        </label>
+      </div>
+      {errors?.accept && (
+        <p className="text-sm text-red-600 mt-1">{errors?.accept?.message}</p>
+      )}
       <button type="submit">submit</button>
     </form>
   );
