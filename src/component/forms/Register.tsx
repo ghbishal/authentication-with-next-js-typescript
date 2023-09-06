@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
 import zxcvbn from "zxcvbn";
 import { useEffect } from "react";
+import SlideButton from "../button/SlideButton";
 
 const FormSchema = z
   .object({
@@ -177,7 +178,13 @@ export default function Register() {
       {errors?.accept && (
         <p className="text-sm text-red-600 mt-1">{errors?.accept?.message}</p>
       )}
-      <button type="submit">submit</button>
+      <SlideButton
+        type="submit"
+        text="Sign up"
+        slide_text="Secure sign up"
+        icon={<FiLock />}
+        disabled={isSubmitting}
+      />
     </form>
   );
 }
