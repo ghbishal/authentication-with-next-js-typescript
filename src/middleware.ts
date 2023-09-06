@@ -8,7 +8,6 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
     secureCookie: process.env.NODE_ENV === "production",
   });
-  console.log(session);
   // return NextResponse.redirect(new URL("/home", request.url));
   if (pathname == "/") {
     if (!session)

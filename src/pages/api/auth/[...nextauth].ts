@@ -61,7 +61,6 @@ export default NextAuth({
       if (user) {
         token.provider = account?.provider;
       }
-      console.log(token);
       return token;
     },
     async session({ session, token }: { session: any; token: JWT }) {
