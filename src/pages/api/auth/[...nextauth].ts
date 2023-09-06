@@ -28,6 +28,7 @@ export const authOptions = {
       clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
