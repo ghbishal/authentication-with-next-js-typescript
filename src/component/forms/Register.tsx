@@ -3,7 +3,7 @@ import Input from "@/component/inputs/Input";
 import { CiUser } from "react-icons/ci";
 import { FiLock, FiMail } from "react-icons/fi";
 import { BsTelephone } from "react-icons/bs";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import validator from "validator";
@@ -58,7 +58,9 @@ export default function Register() {
     resolver: zodResolver(FormSchema),
   });
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit: SubmitHandler<FormSchemaType> = async (values) => {
+    console.log(values);
+  };
   const validatePasswordStrength = () => {
     let password = watch().password;
     return zxcvbn(password ? password : "").score;
@@ -149,7 +151,7 @@ export default function Register() {
         error={errors?.confirmPassword?.message}
         disabled={isSubmitting}
       />
-      <div>
+      <div className="flex items-center mt-3">
         <input
           type="checkbox"
           id="accept"
