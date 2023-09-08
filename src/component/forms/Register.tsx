@@ -10,6 +10,8 @@ import validator from "validator";
 import zxcvbn from "zxcvbn";
 import { useEffect } from "react";
 import SlideButton from "../button/SlideButton";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const FormSchema = z
   .object({
@@ -59,7 +61,14 @@ export default function Register() {
   });
 
   const onSubmit: SubmitHandler<FormSchemaType> = async (values) => {
-    console.log(values);
+    try {
+      const { data } = await axios.post("api/auth/signup", {
+        ...values,
+      });
+      toast.success(data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
   };
   const validatePasswordStrength = () => {
     let password = watch().password;

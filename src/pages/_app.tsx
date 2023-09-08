@@ -23,7 +23,6 @@ export default function App({
         theme="colored"
       />
       <Component {...pageProps} />
-      <ToastContainer />
     </SessionProvider>
   );
 }
