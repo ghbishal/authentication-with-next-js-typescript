@@ -54,6 +54,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    reset,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormSchemaType>({
@@ -65,6 +66,7 @@ export default function Register() {
       const { data } = await axios.post("api/auth/signup", {
         ...values,
       });
+      reset();
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error.response.data.message);
