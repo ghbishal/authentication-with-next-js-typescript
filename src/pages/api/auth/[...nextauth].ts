@@ -9,9 +9,41 @@ import clientPromise from "@/lib/mongodb";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import { JWT } from "next-auth/jwt";
 import { Adapter } from "next-auth/adapters";
+import CredentialsProvider from "next-auth/providers/credentials";
+import connectDb from "@/utils/connectDb";
+import UserModel from "@/models/User";
+import bcrypt from "bcryptjs";
 
 export default NextAuth({
   providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {
+          label: "Name",
+          type: "text",
+        },
+        password: {
+          label: "password",
+          type: "password",
+        },
+      },
+      async authorize(credentials) {
+        await connectDb();
+        const user = await UserModel.findOne({ email: credentials!.email });
+        if (!user) {
+          throw new Error("Email is not registered.");
+        }
+        const isPasswordCorrect = await bcrypt.compare(
+          credentials!.password,
+          user.password
+        );
+        if (!isPasswordCorrect) {
+          throw new Error("Password is incorrect.");
+        }
+        return user;
+      },
+    }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_ID as string,
       clientSecret: process.env.FACEBOOK_SECRET as string,
