@@ -11,6 +11,7 @@ import { signIn } from "next-auth/react";
 
 type LoginProps = {
   callbackUrl: string;
+  csrfToken: string;
 };
 
 const FormSchema = z.object({
@@ -23,7 +24,7 @@ const FormSchema = z.object({
 
 type FormSchemaType = z.infer<typeof FormSchema>;
 
-export default function Login({ callbackUrl }: LoginProps) {
+export default function Login({ callbackUrl, csrfToken }: LoginProps) {
   const router = useRouter();
   const path = router.pathname;
   const {
@@ -35,15 +36,16 @@ export default function Login({ callbackUrl }: LoginProps) {
   });
 
   const onSubmit: SubmitHandler<FormSchemaType> = async (values) => {
-    try {
-      const res: any = await signIn("credentials", {
-        redirect: true,
-        email: values.email,
-        password: values.password,
-        callbackUrl,
-      });
-    } catch (error) {
-      toast.error((error as Error).message);
+    const res: any = await signIn("credentials", {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+      callbackUrl,
+    });
+    if (res.error) {
+      return toast.error(res.error);
+    } else {
+      return router.push("/");
     }
   };
 
@@ -69,7 +71,13 @@ export default function Login({ callbackUrl }: LoginProps) {
         </a>
       </p>
 
-      <form className="my-8 text-sm" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        method="post"
+        action="/api/auth/signin/email"
+        className="my-8 text-sm"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <input type="hidden" name="csrfToken" defaultValue={csrfToken} />
         <Input
           name="email"
           label="Email address"

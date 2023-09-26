@@ -75,6 +75,9 @@ export default NextAuth({
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/auth",
+  },
   callbacks: {
     async jwt({
       token,

@@ -2,14 +2,17 @@ import Background from "@/component/Backgrounds/Background";
 import Login from "@/component/forms/Login";
 import Register from "@/component/forms/Register";
 import { NextPageContext } from "next";
+import { getCsrfToken } from "next-auth/react";
 import React from "react";
 
 export default function auth({
   tab,
   callbackUrl,
+  csrfToken,
 }: {
   tab: string;
   callbackUrl: string;
+  csrfToken: string;
 }) {
   return (
     <div className="w-full flex items-center justify-center">
@@ -17,7 +20,11 @@ export default function auth({
         {/*------- FORM ---------- */}
         <div className="w-full sm:w5/6 md:w-2/3 lg:w1/2 xl:w-1/3 2xl:w-1/3 h-full bg-white flex flex-col items-center justify-center">
           {/* -------- SIGN UP FORM ---------- */}
-          {tab == "signin" ? <Login callbackUrl={callbackUrl} /> : <Register />}
+          {tab == "signin" ? (
+            <Login callbackUrl={callbackUrl} csrfToken={csrfToken} />
+          ) : (
+            <Register />
+          )}
         </div>
       </div>
       {/* ---------- BACKGROUND -------- */}
@@ -34,7 +41,9 @@ export async function getServerSideProps(ctx: NextPageContext) {
   const callbackUrl = query.callbackUrl
     ? query.callbackUrl
     : process.env.NEXTAUTH_URL;
+
+  const csrfToken = await getCsrfToken(ctx);
   return {
-    props: { tab: JSON.parse(JSON.stringify(tab)), callbackUrl },
+    props: { tab: JSON.parse(JSON.stringify(tab)), callbackUrl, csrfToken },
   };
 }
