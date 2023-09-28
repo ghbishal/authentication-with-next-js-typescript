@@ -1,18 +1,21 @@
 import Background from "@/component/Backgrounds/Background";
+import SocialButton from "@/component/button/SocialButton";
 import Login from "@/component/forms/Login";
 import Register from "@/component/forms/Register";
 import { NextPageContext } from "next";
-import { getCsrfToken } from "next-auth/react";
+import { getCsrfToken, getProviders } from "next-auth/react";
 import React from "react";
 
 export default function auth({
   tab,
   callbackUrl,
   csrfToken,
+  providers,
 }: {
   tab: string;
   callbackUrl: string;
   csrfToken: string;
+  providers: any;
 }) {
   return (
     <div className="w-full flex items-center justify-center">
@@ -25,6 +28,28 @@ export default function auth({
           ) : (
             <Register />
           )}
+          <div className="w-full flex items-center justify-between px-12">
+            <div className="w-full h-[1px] bg-gray-300"></div>
+            <span className="text-sm uppercase mx-6 text-gray-400">Or</span>
+            <div className="w-full h-[1px] bg-gray-300"></div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
+            {providers.map((provider: any) => {
+              if (provider.name == "Credentials") return;
+              return (
+                <SocialButton
+                  key={provider.id}
+                  id={provider.id}
+                  text={
+                    tab == "signup"
+                      ? `Sign up with ${provider.name}`
+                      : `Sign in with ${provider.name}`
+                  }
+                  csrfToken={csrfToken}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
       {/* ---------- BACKGROUND -------- */}
@@ -43,7 +68,13 @@ export async function getServerSideProps(ctx: NextPageContext) {
     : process.env.NEXTAUTH_URL;
 
   const csrfToken = await getCsrfToken(ctx);
+  const providers = await getProviders();
   return {
-    props: { tab: JSON.parse(JSON.stringify(tab)), callbackUrl, csrfToken },
+    props: {
+      providers: Object.values(providers!),
+      tab: JSON.parse(JSON.stringify(tab)),
+      callbackUrl,
+      csrfToken,
+    },
   };
 }
